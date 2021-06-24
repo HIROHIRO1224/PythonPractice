@@ -1,2 +1,2 @@
-Start-Process powershell -Verb runAs{
-    Enable-PnpDevice -InstanceId (Get-PnpDevice -FriendlyName *マイク* -Class AudioEndpoint -Status OK).InstanceId}
+Start-Process powershell -Verb runas{
+    Enable-PnpDevice -InstanceId (Get-PnpDevice -Class AudioEndpoint -Status OK).InstanceId}
