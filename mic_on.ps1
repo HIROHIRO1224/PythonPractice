@@ -1,2 +1,4 @@
 Start-Process powershell -Verb runas{
-    Enable-PnpDevice -InstanceId (Get-PnpDevice -Class AudioEndpoint -Status OK).InstanceId}
+    $device_class=Get-PnpDevice -Class AudioEndpoint
+   $device_class| Enable-PnpDevice -Confirm:$false 
+}
