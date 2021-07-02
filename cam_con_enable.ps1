@@ -1,3 +1,4 @@
 Start-Process powershell -Verb runas{
-    Enable-PnpDevice -InstanceId (Get-PnpDevice -FriendlyName *webcam* -Class Camera -Status error).InstanceId
+    $camera_device=Get-PnpDevice -FriendlyName *cam* -Class Camera -Status ERROR
+    $camera_device|Enable-PnpDevice -Confirm:$false
 }
