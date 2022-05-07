@@ -1,57 +1,37 @@
 import cv2
-
-if __name__ == '__main__':
-    # 定数定義
-    ESC_KEY = 27     # Escキー
-    INTERVAL= 33     # 待ち時間
-    FRAME_RATE = 30  # fps
-
-    ORG_WINDOW_NAME = "org"
-    GAUSSIAN_WINDOW_NAME = "gaussian"
-
-    DEVICE_ID = 0
-
-    # 分類器の指定
-    cascade_file = "./haarcascade_frontalface_alt2.xml"
-    cascade = cv2.CascadeClassifier(cascade_file)
-
-    # カメラ映像取得
-    cap = cv2.VideoCapture(DEVICE_ID)
-
-    # 初期フレームの読込
-    end_flag, c_frame = cap.read()
-    height, width, channels = c_frame.shape
-
-    # ウィンドウの準備
-    cv2.namedWindow(ORG_WINDOW_NAME)
-    cv2.namedWindow(GAUSSIAN_WINDOW_NAME)
-
-    # 変換処理ループ
-    while end_flag == True:
-
-        # 画像の取得と顔の検出
-        img = c_frame
-        img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        face_list = cascade.detectMultiScale(img_gray, minSize=(100, 100))
-
-        # 検出した顔に印を付ける
-        for (x, y, w, h) in face_list:
-            color = (0, 0, 225)
-            pen_w = 3
-            cv2.rectangle(img_gray, (x, y), (x+w, y+h), color, thickness = pen_w)
-
-        # フレーム表示
-        cv2.imshow(ORG_WINDOW_NAME, c_frame)
-        cv2.imshow(GAUSSIAN_WINDOW_NAME, img_gray)
-
-        # Escキーで終了
-        key = cv2.waitKey(INTERVAL)
-        if key == ESC_KEY:
-            break
-
-        # 次のフレーム読み込み
-        end_flag, c_frame = cap.read()
-
-    # 終了処理
-    cv2.destroyAllWindows()
-    cap.release()
+ 
+#動画を読込み
+#カメラ等でストリーム再生の場合は引数に0等のデバイスIDを記述する
+video = cv2.VideoCapture(0)
+ 
+cascade_path = "haarcascade_frontalface_alt2.xml"
+cascade = cv2.CascadeClassifier(cascade_path)
+ 
+while video.isOpened():
+    # フレームを読込み
+    ret, frame = video.read()
+ 
+    # フレームが読み込めなかった場合は終了（動画が終わると読み込めなくなる）
+    if not ret: break
+    # 顔検出
+    facerect = cascade.detectMultiScale(frame, scaleFactor=1.1, minNeighbors=2, minSize=(30, 30))
+     
+    # 矩形線の色
+    rectangle_color = (0, 255, 0) #緑色
+ 
+    # 顔を検出した場合
+    if len(facerect) > 0:
+        for rect in facerect:
+            cv2.rectangle(frame, tuple(rect[0:2]),tuple(rect[0:2] + rect[2:4]), rectangle_color, thickness=2)
+ 
+ 
+    # フレームの描画
+    cv2.imshow('frame', frame)
+ 
+    # qキーの押下で処理を中止
+    key = cv2.waitKey(1) & 0xFF
+    if key == ord('q'): break
+ 
+#メモリの解放
+video.release()
+cv2.destroyAllWindows()
